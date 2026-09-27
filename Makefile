@@ -25,7 +25,7 @@ sample: ipv4
 	./ipv4 < tests/sample_input.txt | diff - tests/sample_expected.txt && echo "sample transcript matches"
 
 banned:
-	! grep -nE 'ato[il]|strto|sto[iu]l?|scanf|inet_|regex' src/*.cpp src/*.h
+	! grep -nE 'ato[il]|strto|stoi|stol|stoul|scanf|inet_|regex' src/*.cpp src/*.h
 
 clean:
 	rm -f ipv4 test_extract

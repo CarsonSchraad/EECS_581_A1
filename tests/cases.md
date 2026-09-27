@@ -1,4 +1,4 @@
-# Test oracle (32 cases)
+# Test oracle (32 hand-written cases + 7 added after adversarial fuzzing)
 
 Written before seeing any Sonnet code. Decimal = A*16777216 + B*65536 + C*256 + D.
 "Invalid" means extractIPv4 returns false, outAddress == 0, outPort == -1.
@@ -37,6 +37,23 @@ Written before seeing any Sonnet code. Decimal = A*16777216 + B*65536 + C*256 + 
 | M3 | `at 12:30:45 host 8.8.8.8:53` | 8.8.8.8 · 134744072 · 53 | Timestamp-shaped noise |
 | L1 | *(empty line)* | Invalid | D7 |
 | L2 | `end` and ` END  ` (trailing space) | Invalid, loop continues | Only exact `END` quits (D5) |
+| E1 | `1.2:3.4` | Invalid | Colon not immediately after the 4th octet |
+| E2 | `1:2.3.4` | Invalid | Colon in place of the first separator |
+| E3 | `1.2.3:4` | Invalid | Colon in place of the third separator |
+| E4 | `-1.2.3.4` | 1.2.3.4 · 16909060 · none | Non-token punctuation (`-`) is garbage, not just letters |
+| E5 | `1.2.3.256` | Invalid | Out-of-range value in the *last* octet, not just the first |
+| E6 | `255255255255` | Invalid | 12 bare digits, no separators at all |
+| E7 | `1.2.3.4:1` | 1.2.3.4 · 16909060 · 1 | Single-digit nonzero port (only 0 and 5-digit ports were tested before) |
+
+E1-E7 were added after the assignment's explicit warning that AI-generated
+parsers "reliably produce... subtle bugs on the first attempt" and that a
+clean first pass means the tests weren't hard enough. In response we wrote
+an independently-structured reference validator (substr/find-based splitting
+instead of the submission's single-pass scanner) and fuzzed 5.5M generated
+near-valid and randomly-mutated inputs against it; E1-E3 come directly from
+grammar language in the assignment ("a colon not immediately after the
+fourth octet") that wasn't in the original 32, E4-E7 from gaps the fuzzer's
+generator design pointed at. See `AI_DISCLOSURE.md` for the outcome.
 
 ## Design decisions (D1-D10)
 

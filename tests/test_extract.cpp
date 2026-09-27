@@ -47,6 +47,16 @@ static const Case kCases[] = {
     // char, so extractIPv4 must reject both like any other non-address line.
     {"L2a", "end", false, 0UL, -1},
     {"L2b", " END  ", false, 0UL, -1},
+    // E1-E7: added after fuzzing against an independent reference
+    // implementation (see AI_DISCLOSURE.md); no bug found, but these close
+    // gaps the original 32 cases didn't cover.
+    {"E1", "1.2:3.4", false, 0UL, -1},
+    {"E2", "1:2.3.4", false, 0UL, -1},
+    {"E3", "1.2.3:4", false, 0UL, -1},
+    {"E4", "-1.2.3.4", true, 16909060UL, -1},
+    {"E5", "1.2.3.256", false, 0UL, -1},
+    {"E6", "255255255255", false, 0UL, -1},
+    {"E7", "1.2.3.4:1", true, 16909060UL, 1},
 };
 
 int main() {
