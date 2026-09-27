@@ -1,3 +1,4 @@
+#include "ipv4_extract.h"
 #include <iostream>
 #include <string>
 
@@ -116,6 +117,7 @@ bool extractIPv4(const std::string& str, unsigned long& outAddress, int& outPort
     return false;
 }
 
+#ifndef UNIT_TEST
 int main() {
     std::string line;
     while (true) {
@@ -153,3 +155,4 @@ int main() {
         }
     }
 }
+#endif
